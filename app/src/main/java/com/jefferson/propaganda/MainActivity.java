@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView myadd;
     private ViewFlipper viewFlipper;
     static AsyncTask task;
+    private String url = "https://gist.githubusercontent.com/cabrall10/0db36b0d5cb0134d0e703a053a092a0e/raw/877c1df95fc0d64830328a620e9d835c2a917f4c/propagandas.json";
 
     @SuppressLint("StaticFieldLeak")
     @Override
@@ -40,19 +41,13 @@ public class MainActivity extends AppCompatActivity {
         myadd = (TextView)this.findViewById(R.id.ads);
         myadd.setSelected(true);
 
-        viewFlipper = findViewById(R.id.v_fliper);
-
-        viewFlipper.setFlipInterval(5000);
-        viewFlipper.setAutoStart(true);
-
-        viewFlipper.setInAnimation(this, R.anim.fade_out);
-        viewFlipper.setOutAnimation(this, R.anim.fade_in);
+        configurarViewFlipper();
 
         task = new  AsyncTask<Object, Object, Object>() {
 
             @Override
             protected Object doInBackground(Object... strings) {
-                return HttpRequest.get("https://gist.githubusercontent.com/cabrall10/0db36b0d5cb0134d0e703a053a092a0e/raw/ac2a4b7877227af4164c8f26873ba630d41c8335/propagandas.json").body();
+                return HttpRequest.get(url).body();
             }
 
             @Override
@@ -62,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
                     JSONArray array = new JSONArray(s.toString());
                     for (int i = 0; i < array.length(); i++) {
-                        if (array.getString(i) != null) flipperImages(array.getString(i));
+                        if (array.getString(i) != null) preencherViewFlipper(array.getString(i));
                     }
                 } catch (Exception e) {
                     Log.d("error", e.getMessage());
@@ -71,20 +66,11 @@ public class MainActivity extends AppCompatActivity {
         };
         task.execute();
 
-//        int images[] = {R.drawable.ucam, R.drawable.blackf , R.drawable.casas_b};
-//        String images[] = {"https://3.bp.blogspot.com/-3iULfH-TRUI/WG5iOOxattI/AAAAAAAADtw/8zGuk9y3FiQqmhgeKF9AO-xA5z5gmhrkQCLcB/s1600/casas%2Bbahia.png", "https://www.encontracidadedutra.com.br/wp-content/uploads/2013/02/casas-bahia-resende-1359904825.jpg"};
-
-//
-//        for(String image : images){
-//            flipperImages(image);
-//        }
-
     }
 
-    public void flipperImages(String image){
+    public void preencherViewFlipper(String image){
         final ImageView imageView = new ImageView(this);
-//        imageView.setBackgroundResource(image);
-//        ImageLoader.getInstance().displayImage(image, imageView);
+
         ImageLoader.getInstance().loadImage(image, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -93,6 +79,15 @@ public class MainActivity extends AppCompatActivity {
                 viewFlipper.addView(imageView);
             }
         });
+    }
+
+    public void configurarViewFlipper(){
+        viewFlipper = findViewById(R.id.v_fliper);
+
+        viewFlipper.setFlipInterval(5000);
+        viewFlipper.setAutoStart(true);
+        viewFlipper.setInAnimation(this, R.anim.fade_out);
+        viewFlipper.setOutAnimation(this, R.anim.fade_in);
     }
 
 }
