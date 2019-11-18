@@ -19,8 +19,6 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import org.json.JSONArray;
 
-import java.net.URL;
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView myadd;
@@ -43,29 +41,24 @@ public class MainActivity extends AppCompatActivity {
 
         configurarViewFlipper();
 
-        task = new  AsyncTask<Object, Object, Object>() {
 
-            @Override
-            protected Object doInBackground(Object... strings) {
-                return HttpRequest.get(url).body();
-            }
+            AsyncViewFliperActivity viewFliperActivity = new AsyncViewFliperActivity() {
+                @Override
+                protected void onPostExecute(Object s) {
+                    super.onPostExecute(s);
+                    try {
 
-            @Override
-            protected void onPostExecute(Object s) {
-                super.onPostExecute(s);
-                try {
-
-                    JSONArray array = new JSONArray(s.toString());
-                    for (int i = 0; i < array.length(); i++) {
-                        if (array.getString(i) != null) preencherViewFlipper(array.getString(i));
+                        JSONArray array = new JSONArray(s.toString());
+                        for (int i = 0; i < array.length(); i++) {
+                            if (array.getString(i) != null)
+                                preencherViewFlipper(array.getString(i));
+                        }
+                    } catch (Exception e) {
+                        Log.d("error", e.getMessage());
                     }
-                } catch (Exception e) {
-                    Log.d("error", e.getMessage());
                 }
-            }
-        };
-        task.execute();
-
+            };
+            viewFliperActivity.execute();
     }
 
     public void preencherViewFlipper(String image){
